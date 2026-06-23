@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header.jsx";
 import HomePage from "./components/HomePage.jsx";
 import AlertsPage from "./components/AlertsPage.jsx";
-import { alerts, projects } from "./data/mockData.js";
+import { projects } from "./data/mockData.js";
+import { scanCloudConfigurations } from "./data/scannerData.js";
 
 const STORAGE_KEY = "cloud-monitor-prioritised-alerts";
 
@@ -16,6 +17,8 @@ function readPrioritisedAlerts() {
 }
 
 export default function App() {
+  const [alerts, setAlerts] = useState(() => scanCloudConfigurations());
+  const [lastUpdated, setLastUpdated] = useState(() => new Date());
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [currentView, setCurrentView] = useState("manager");
   const [selectedAlertId, setSelectedAlertId] = useState(null);
@@ -28,6 +31,16 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(prioritisedAlertIds));
   }, [prioritisedAlertIds]);
+
+  useEffect(() => {
+    function refreshAlerts() {
+      setAlerts(scanCloudConfigurations());
+      setLastUpdated(new Date());
+    }
+
+    const intervalId = window.setInterval(refreshAlerts, 10000);
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   const selectedProject = useMemo(
     () => projects.find((project) => project.id === selectedProjectId) ?? null,
@@ -97,12 +110,18 @@ export default function App() {
             prioritisedAlertIds={prioritisedAlertIds}
             project={selectedProject}
             selectedAlert={selectedAlert}
+            lastUpdated={lastUpdated}
             severityFilter={severityFilter}
             serviceFilters={serviceFilters}
             technicianTab={technicianTab}
           />
         ) : (
-          <HomePage alerts={alerts} projects={projects} onProjectSelect={openProject} />
+          <HomePage
+            alerts={alerts}
+            lastUpdated={lastUpdated}
+            projects={projects}
+            onProjectSelect={openProject}
+          />
         )}
       </section>
     </main>

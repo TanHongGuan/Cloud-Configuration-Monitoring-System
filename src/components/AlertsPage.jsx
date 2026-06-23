@@ -35,6 +35,7 @@ export default function AlertsPage({
   prioritisedAlertIds,
   project,
   selectedAlert,
+  lastUpdated,
   severityFilter,
   serviceFilters,
   technicianTab,
@@ -66,6 +67,14 @@ export default function AlertsPage({
     { id: "danger", label: "Danger" },
     { id: "warning", label: "Warning" },
   ];
+  const lastUpdatedLabel = lastUpdated.toLocaleString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 
   return (
     <div className={`alerts-page ${isSidebarOpen ? "has-sidebar" : ""}`}>
@@ -77,39 +86,42 @@ export default function AlertsPage({
       <div className={`alerts-layout ${isSidebarOpen ? "sidebar-open" : ""}`}>
         <section className={`alerts-main ${isTechnician ? "technician-main" : ""}`}>
           <div className="project-workspace">
-            <aside className="filter-panel service-filter-panel" aria-label="AWS service filters">
-              <div className="filter-group">
-                <h2>AWS Services</h2>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={serviceFilters.length === 0}
-                    onChange={() => onServiceFiltersChange([])}
-                  />
-                  All
-                </label>
-                {availableServices.length > 0 ? (
-                  availableServices.map((service) => (
-                    <label key={service}>
-                      <input
-                        type="checkbox"
-                        checked={serviceFilters.includes(service)}
-                        onChange={(event) => {
-                          onServiceFiltersChange(
-                            event.target.checked
-                              ? [...serviceFilters, service]
-                              : serviceFilters.filter((selectedService) => selectedService !== service)
-                          );
-                        }}
-                      />
-                      {service}
-                    </label>
-                  ))
-                ) : (
-                  <p className="filter-note">No services found.</p>
-                )}
-              </div>
-            </aside>
+            <div className="service-filter-column">
+              <p className="last-updated">Last updated: {lastUpdatedLabel}</p>
+              <aside className="filter-panel service-filter-panel" aria-label="AWS service filters">
+                <div className="filter-group">
+                  <h2>AWS Services</h2>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={serviceFilters.length === 0}
+                      onChange={() => onServiceFiltersChange([])}
+                    />
+                    All
+                  </label>
+                  {availableServices.length > 0 ? (
+                    availableServices.map((service) => (
+                      <label key={service}>
+                        <input
+                          type="checkbox"
+                          checked={serviceFilters.includes(service)}
+                          onChange={(event) => {
+                            onServiceFiltersChange(
+                              event.target.checked
+                                ? [...serviceFilters, service]
+                                : serviceFilters.filter((selectedService) => selectedService !== service)
+                            );
+                          }}
+                        />
+                        {service}
+                      </label>
+                    ))
+                  ) : (
+                    <p className="filter-note">No services found.</p>
+                  )}
+                </div>
+              </aside>
+            </div>
 
             <div className="tasks-area">
               <div className="filter-tabs">

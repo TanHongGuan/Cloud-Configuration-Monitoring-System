@@ -306,6 +306,17 @@ button {
   overflow: hidden;
 }
 
+.service-filter-column {
+  min-width: 0;
+}
+
+.last-updated {
+  margin: 0 0 10px;
+  color: var(--muted-text);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 .service-filter-panel {
   position: static;
   min-height: 0;

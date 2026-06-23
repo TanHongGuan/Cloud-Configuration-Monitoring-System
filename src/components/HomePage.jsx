@@ -13,11 +13,19 @@ function getCounts(projectId, alerts) {
     );
 }
 
-export default function HomePage({ alerts, projects, onProjectSelect }) {
+export default function HomePage({ alerts, lastUpdated, projects, onProjectSelect }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortByName, setSortByName] = useState(false);
   const [showDangerOnly, setShowDangerOnly] = useState(false);
   const [showWarningOnly, setShowWarningOnly] = useState(false);
+  const lastUpdatedLabel = lastUpdated.toLocaleString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 
   const projectsWithCounts = useMemo(
     () =>
@@ -45,51 +53,54 @@ export default function HomePage({ alerts, projects, onProjectSelect }) {
     <div className="home-page">
       <h1>Overview of Projects</h1>
       <div className="home-layout">
-        <aside className="filter-panel" aria-label="Project filters">
-          <div className="filter-group">
-            <h2>Search</h2>
-            <input
-              type="search"
-              placeholder="Search projects..."
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-            />
-          </div>
-
-          <div className="filter-group">
-            <h2>Sort By</h2>
-            <label>
+        <div className="service-filter-column">
+          <p className="last-updated">Last updated: {lastUpdatedLabel}</p>
+          <aside className="filter-panel" aria-label="Project filters">
+            <div className="filter-group">
+              <h2>Search</h2>
               <input
-                type="checkbox"
-                checked={sortByName}
-                onChange={(event) => setSortByName(event.target.checked)}
+                type="search"
+                placeholder="Search projects..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
               />
-              Name
-            </label>
-          </div>
+            </div>
 
-          <hr />
+            <div className="filter-group">
+              <h2>Sort By</h2>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={sortByName}
+                  onChange={(event) => setSortByName(event.target.checked)}
+                />
+                Name
+              </label>
+            </div>
 
-          <div className="filter-group">
-            <h2>Risk Level</h2>
-            <label>
-              <input
-                type="checkbox"
-                checked={showDangerOnly}
-                onChange={(event) => setShowDangerOnly(event.target.checked)}
-              />
-              Danger
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={showWarningOnly}
-                onChange={(event) => setShowWarningOnly(event.target.checked)}
-              />
-              Warning
-            </label>
-          </div>
-        </aside>
+            <hr />
+
+            <div className="filter-group">
+              <h2>Risk Level</h2>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showDangerOnly}
+                  onChange={(event) => setShowDangerOnly(event.target.checked)}
+                />
+                Danger
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showWarningOnly}
+                  onChange={(event) => setShowWarningOnly(event.target.checked)}
+                />
+                Warning
+              </label>
+            </div>
+          </aside>
+        </div>
 
         <section className="project-list" aria-label="Projects">
           {visibleProjects.map((project) => (
